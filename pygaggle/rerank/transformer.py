@@ -118,8 +118,10 @@ class MonoT5(Reranker):
                 batch_scores = batch_scores[:, [self.token_false_id, self.token_true_id]]
                 batch_scores = torch.nn.functional.log_softmax(batch_scores, dim=1)
                 batch_log_probs = batch_scores[:, 1].tolist()
-            for doc, score in zip(batch.documents, batch_log_probs):
+                batch_log_args_max =  torch.argmax(batch_scores, dim=1).tolist() ## false index = 0, true index = 1
+            for doc, score, result in zip(batch.documents, batch_log_probs,batch_log_args_max):
                 doc.score = score
+                doc.metadata['result'] = result
 
         return texts
 
